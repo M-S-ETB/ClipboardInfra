@@ -1,0 +1,16 @@
+{
+  "http": {
+    "clientUrl": "http://clipboard.intern.etb:3200/",
+    "apiUrl": "http://clipboard.intern.etb:3100/",
+    "grafanaUrl": "http://clipboard.intern.etb:3500/grafana/",
+    "messageQueueUrl": "http://clipboard.intern.etb:15672/",
+    "redisInsightUrl": "http://clipboard.intern.etb:8001/"
+  },
+  "https": {
+    "clientUrl": "https://clipboard.intern.etb:3201/",
+    "apiUrl": "https://clipboard.intern.etb:3201/api/",
+    "grafanaUrl": "https://clipboard.intern.etb:3201/grafana/",
+    "messageQueueUrl": "https://clipboard.intern.etb:3201/message-queue/",
+    "redisInsightUrl": "https://clipboard.intern.etb:3201/redis-insight/"
+  }
+}

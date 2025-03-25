@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: 'default'  # name of the provider can be any.
+    orgId: 1
+    folder: ''   # The folder where you want to save the dashboards. Empty means root directory.
+    type: file   # Because you are storing the dashboard as JSON file.
+    disableDeletion: false
+    updateIntervalSeconds: 10  # Scan dashboards interval, in seconds.
+    options:
+      path: '/etc/grafana/provisioning/dashboards'  # path to the dashboard JSON files
+    editable: true
