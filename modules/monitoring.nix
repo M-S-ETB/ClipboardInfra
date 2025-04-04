@@ -1,22 +1,16 @@
-{ config, pkgs, scuffedFlakeConfig, ... }:
+{ config, pkgs, ... }:
 {
   services.grafana = {
     enable = true;
     settings = {
       security = {
-        admin_user = "grafana-admin"; # TODO: use secrets for real details
-        admin_email = "example@example.com"; # TODO: use secrets for real details
-        admin_password = "password-admin"; # TODO: use secrets for real details
         allow_embedding = true;
       };
       server = {
         # Listening Address
-        http_addr = "127.0.0.1";
+        http_addr = "0.0.0.0";
         # and Port
         http_port = 3500;
-        # Grafana needs to know on which domain and URL it's running
-        domain = scuffedFlakeConfig.webserverDomain; # TODO: use config variables for this
-        root_url = "https://clipboard.intern.etb/grafana/"; # Not needed if it is `https://your.domain/`
         serve_from_sub_path = true;
       };
     };
@@ -28,6 +22,16 @@
           name = "Prometheus";
           type = "prometheus";
           url = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
+        }
+        {
+          name = "Loki";
+          type = "loki";
+          url = "http://${config.clipboardConfig.grafanaLokiConnection}";
+        }
+        {
+          name = "Tempo";
+          type = "tempo";
+          url = "http://${config.clipboardConfig.grafanaTempoConnection}";
         }
       ];
       dashboards.settings.providers = [{
@@ -96,5 +100,6 @@
   networking.firewall.allowedTCPPorts = [
     4317 # OpenTelemetry gRPC
     4318 # OpenTelemetry HTTP
+    3500 # Grafana
   ];
 }

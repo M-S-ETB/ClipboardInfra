@@ -14,19 +14,39 @@
       system = "x86_64-linux";
       specialArgs = {
         inherit inputs;
-        scuffedFlakeConfig = {
-          webserverDomain = "clipboard.intern.etb";
-        };
       };
       modules = [
-        ./system/configuration.nix
+        ./modules/options.nix # Include the module with your options
 
         # Base system configuration
         {
-          nix.settings.experimental-features = [ "nix-command" "flakes" ];
-          networking.firewall.allowedTCPPorts = [ 9090 3000 3100 3200 3500 ];
+          # TODO explore better ways to configure things
+          clipboardConfig = {
+            domainName = "clipboard.intern.etb";
+            grafanaAdminUser = "admin";
+            grafanaAdminEmail = "example@example.com";
+            grafanaAdminPassword = "admin"; # TODO: use ENV var or proper secrets of some sort here
+          };
+          networking.firewall.allowedTCPPorts = [ 9090 3000 3100 3200 ];
           networking.hostName = "clipboard-server";
         }
+
+        # Development force static network
+        {
+          networking.interfaces.eth0 = {
+            useDHCP = false;
+            ipv4.addresses = [
+              {
+                address = "172.31.153.103"; # Static IP in the subnet
+                prefixLength = 20;        # Match the subnet size
+              }
+            ];
+            ipv4.gateway = "172.31.144.1"; # Hyper-V NAT gateway
+            # ipv4.dns = [ "8.8.8.8" "8.8.4.4" ]; # Optional DNS
+          };
+        }
+
+        ./system/configuration.nix
 
         # NixOS modules to define system services
         ./modules/redis.nix

@@ -18,7 +18,7 @@ exporters:
   #    tls:
   #      insecure: true
   otlp/traces:
-    endpoint: clipboard-tempo:4317
+    endpoint: clipboard-tempo:14317
     tls:
       insecure: true
   otlphttp/logs:

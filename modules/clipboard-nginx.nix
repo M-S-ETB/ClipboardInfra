@@ -49,14 +49,21 @@ in
       # Root for serving the Angular client
       root = ../system; # clipboardClient;
 
+      serverName = config.clipboardConfig.domainName;
+
       listen = [
         { port = 443; ssl = true; addr = "[::]"; }
+        { port = 80; ssl = false; addr = "[::]"; }
       ];
       forceSSL = true; # Redirect HTTP to HTTPS
 
       # SSL Configuration
       sslCertificate = ../certs/clipboard.pem;  # Path to your SSL cert
       sslCertificateKey = ../certs/clipboard.key;  # Path to private key
+
+#      locations = [
+#        ""
+#      ];
 
       # Serve the static `config.json` and handle routes
       extraConfig = ''
