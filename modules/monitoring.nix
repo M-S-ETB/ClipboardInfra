@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, scuffedFlakeConfig, ... }:
 {
   services.grafana = {
     enable = true;
@@ -15,7 +15,7 @@
         # and Port
         http_port = 3500;
         # Grafana needs to know on which domain and URL it's running
-        domain = "clipboard.intern.etb"; # TODO: use config variables for this
+        domain = scuffedFlakeConfig.webserverDomain; # TODO: use config variables for this
         root_url = "https://clipboard.intern.etb/grafana/"; # Not needed if it is `https://your.domain/`
         serve_from_sub_path = true;
       };

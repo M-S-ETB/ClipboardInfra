@@ -1,3 +1,4 @@
+
 receivers:
   otlp:
     protocols:
@@ -12,16 +13,16 @@ processors:
   batch:
 
 exporters:
-#  otlphttp/metrics:
-#    endpoint: http://clipboard-prometheus:9090/api/v1/otlp
-#    tls:
-#      insecure: true
+  #  otlphttp/metrics:
+  #    endpoint: http://clipboard-prometheus:9090/api/v1/otlp
+  #    tls:
+  #      insecure: true
   otlp/traces:
-    endpoint: localhost:4317
+    endpoint: clipboard-tempo:4317
     tls:
       insecure: true
   otlphttp/logs:
-    endpoint: http://localhost:3100/otlp
+    endpoint: http://clipboard-loki:3100/otlp
     tls:
       insecure: true
   debug:

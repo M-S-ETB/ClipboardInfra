@@ -1,0 +1,199 @@
+version: '3'
+
+networks:
+  clipboard_default:
+    external: false
+
+services:
+  clipboard-redis-cache:
+    image: redis-stack:latest
+    container_name: clipboard-redis-cache
+    networks:
+      - clipboard_default
+    ports:
+#      - '6379:6379'
+      - '8001:8001'  # redis Insight
+#    environment:
+#      RI_PROXY_PATH: "redis-insight"
+
+  clipboard-message-queue:
+    image: rabbitmq:management
+    container_name: clipboard-message-queue
+    networks:
+      - clipboard_default
+    ports:
+#      - "5672:5672"  # AMQP port
+      - "15672:15672"  # RabbitMQ management UI
+
+  clipboard-grafana:
+    image: grafana/grafana:latest
+    container_name: clipboard-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - clipboard_default
+    volumes:
+      - "./clipboard_server/grafana_storage:/var/lib/grafana"
+      - "./clipboard_server/grafana_logs:/var/log/grafana"
+      - "./config/grafana.ini:/etc/grafana/grafana.ini"
+      - "./clipboard_server/grafana_provisioning:/etc/grafana/provisioning"
+    environment:
+      GF_SECURITY_ADMIN_USER: grafana-admin # use something safe, not this
+      GF_SECURITY_ADMIN_PASSWORD: password-admin # use something safe, not this (store in secrets)
+      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_INSTALL_PLUGINS: ""
+
+  clipboard-loki:
+    image: grafana/loki:latest
+    container_name: clipboard-loki
+    ports:
+      - "3501:3100"
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - "./clipboard_server/loki_data:/var/lib/loki"
+      - "./config/loki-config.yaml:/etc/loki/loki-config.yaml"
+    networks:
+      - clipboard_default
+
+  clipboard-prometheus:
+    # https://hub.docker.com/r/prom/prometheus/tags
+    image: prom/prometheus:latest
+    container_name: clipboard-prometheus
+    networks:
+      - clipboard_default
+#    ports:
+#      - "9090:9090"
+    volumes:
+      - "./clipboard_server/prometheus_data:/prometheus"
+      - "./clipboard_server/prometheus.yml:/etc/prometheus/prometheus.yml"
+    # user: "1002:65534"
+
+  clipboard-otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: clipboard-otel-collector
+    ports:
+      - "4317:4317" # gRPC
+      - "4318:4318" # HTTP
+    networks:
+      - clipboard_default
+    depends_on:
+      - clipboard-tempo
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+
+  clipboard-tempo:
+    image: grafana/tempo:latest
+    container_name: clipboard-tempo
+    command: [ "-config.file=/etc/tempo/tempo-config.yaml" ]
+    ports:
+      - "3250:3250" # Tempo's HTTP port
+    networks:
+      - clipboard_default
+    volumes:
+      - ./clipboard_server/tempo_data:/var/lib/tempo
+      - ./config/tempo-config.yaml:/etc/tempo/tempo-config.yaml
+
+  clipboard-oracledb-exporter:
+    image: iamseth/oracledb_exporter
+    container_name: clipboard-oracledb-exporter
+    networks:
+      - clipboard_default
+    environment:
+      DATA_SOURCE_NAME: test/erp@192.168.80.212:1521/bu # <--------- ERP System
+#    ports:
+#      - 9161:9161
+    user: "1002:1000"
+
+  clipboard-node-exporter:
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+    # https://hub.docker.com/r/prom/node-exporter/tags
+    image: prom/node-exporter:v1.2.0
+    container_name: clipboard-node-exporter
+    networks:
+      - clipboard_default
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    user: "1002:1000"
+
+  # clipboard-cadvisor:
+    # expose:
+      # - 8080
+    # # https://hub.docker.com/r/google/cadvisor/tags
+    # image: google/cadvisor:v0.33.0
+    # container_name: clipboard-cadvisor
+    # networks:
+      # - clipboard_default
+    # volumes:
+      # - /:/rootfs:ro
+      # - /var/run:/var/run:rw
+      # - /sys:/sys:ro
+      # - /var/lib/docker/:/var/lib/docker:ro
+      # #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+    # user: "1002:1000"
+
+
+  clipboard-api:
+    image: clipboard-api:0.2.0-build.125
+    container_name: clipboard-api
+    command: npm run start:dev-ms-docker
+    volumes:
+      - "./clipboard_server/logs:/app/logs"
+      - "config.json:/app/config.json:ro"
+#    working_dir: /app
+    environment:
+      # These replace the config in the .env files
+      REDIS_HOSTNAME: clipboard-redis-cache
+      RABBITMQ_HOSTNAME: clipboard-message-queue
+      DB_HOSTNAME: 192.168.0.212
+      DB_PASSWORD: erp
+      DB_USERNAME: test
+      DB_NAME: bu
+      OTEL_HOSTNAME: clipboard-loki
+      LOKI_CONNECTION: clipboard-loki:3100
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://clipboard-otel-collector:4317"
+    networks:
+      - clipboard_default
+    ports:
+      - '3100:3100'
+    depends_on:
+      - clipboard-redis-cache
+      - clipboard-message-queue
+
+  clipboard-client:
+    image: clipboard-client:0.1.0-build.308
+    container_name: clipboard-client
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./config.json:/usr/share/nginx/html/config.json:ro
+    networks:
+      - clipboard_default
+
+  nginx:
+    image: nginx:latest
+    container_name: clipboard-nginx_reverse_proxy
+    volumes:
+#      - ./config.json:/usr/share/nginx/html/config.json:ro
+      - ./config/nginx_reverse_proxy.conf:/etc/nginx/nginx.conf
+      - /opt/clipboard/certs/clipboard.pem:/etc/nginx/ssl/server.crt:ro
+      - /opt/clipboard/certs/clipboard.key:/etc/nginx/ssl/server.key:ro
+    ports:
+      - "3201:3201" # HTTPS / SSL
+      - "3500:3500" # HTTP unsecure
+    depends_on:
+      - clipboard-client
+      - clipboard-api
+      - clipboard-grafana
+      - clipboard-message-queue
+      - clipboard-redis-cache
+    networks:
+      - clipboard_default

@@ -4,11 +4,11 @@ server:
   http_listen_port: 3100
 
 common:
-  path_prefix: /data/loki
+  path_prefix: /var/lib/loki
   storage:
     filesystem:
-      chunks_directory: /data/loki/chunks
-      rules_directory: /data/loki/rules
+      chunks_directory: /var/lib/loki/chunks
+      rules_directory: /var/lib/loki/rules
   replication_factor: 1
   ring:
     kvstore:
@@ -28,7 +28,7 @@ schema_config:
 #  alertmanager_url: http://localhost:9093
 
 compactor:
-  working_directory: /data/loki/retention
+  working_directory: /var/lib/loki/retention
   compaction_interval: 10m
   retention_enabled: true
   retention_delete_delay: 2h

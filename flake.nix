@@ -9,9 +9,15 @@
     # nixosModules.url = "github:nix-community/nixosModules";
   };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs }@inputs: {
     nixosConfigurations.clipboard = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = {
+        inherit inputs;
+        scuffedFlakeConfig = {
+          webserverDomain = "clipboard.intern.etb";
+        };
+      };
       modules = [
         ./system/configuration.nix
 

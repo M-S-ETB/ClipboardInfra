@@ -1,6 +1,6 @@
 stream_over_http_enabled: true
 server:
-  http_listen_port: 3200
+  http_listen_port: 3250
   log_level: info
 
 query_frontend:
@@ -25,9 +25,9 @@ storage:
   trace:
     backend: local                     # backend configuration to use
     wal:
-      path: /var/tempo/wal             # where to store the wal locally
+      path: /var/lib/tempo/wal             # where to store the wal locally
     local:
-      path: /var/tempo/blocks
+      path: /var/lib/tempo/blocks
 
 overrides:
   max_traces_per_user: 0
