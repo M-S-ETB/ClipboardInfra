@@ -7,6 +7,12 @@
 
     # Optional: Use specialized modules like RabbitMQ or advanced logging setups from nix community
     # nixosModules.url = "github:nix-community/nixosModules";
+
+    # Nix flake for Client project
+    # clipboardClient.url = "path:./../../07_Software/ClipboardClient2";
+
+    # Nix flake for API project
+    clipboardApi.url = "path:../../07_Software/Clipboard_API";
   };
 
   outputs = { self, nixpkgs }@inputs: {
@@ -16,18 +22,46 @@
         inherit inputs;
       };
       modules = [
-        ./modules/options.nix # Include the module with your options
+        ./modules/options.nix
+
+        #clipboardClient.nixosModule
 
         # Base system configuration
         {
+
           # TODO explore better ways to configure things
           clipboardConfig = {
+            # required, used for all services
             domainName = "clipboard.intern.etb";
-            grafanaAdminUser = "admin";
-            grafanaAdminEmail = "example@example.com";
-            grafanaAdminPassword = "admin"; # TODO: use ENV var or proper secrets of some sort here
+
+            grafana = {
+              # required
+              adminUser = "admin";
+
+              # required
+              adminEmail = "example@example.com";
+
+              # required
+              # TODO: use ENV var or proper secrets of some sort here
+              # TODO: look into SOPS for secret management
+              adminPassword = "admin";
+
+              # optional, defaults to 3500
+              port = 3500;
+            };
+
+            api = {
+              # optional, defaults to 3100
+              port = 3100;
+
+              # optional, enabled by default
+              openFirewall = true;
+            };
+
+            #optional, defaults to 6379
+            redis.port = 6379;
           };
-          networking.firewall.allowedTCPPorts = [ 9090 3000 3100 3200 ];
+          networking.firewall.allowedTCPPorts = [ 9090 3200 ];
           networking.hostName = "clipboard-server";
         }
 
@@ -52,7 +86,8 @@
         ./modules/redis.nix
         ./modules/rabbitmq.nix
         ./modules/monitoring.nix
-        #./modules/clipboard-api.nix
+        ./modules/clipboard-api.nix
+        #./modules/clipboard-client.nix
 
         # reverse proxy setup nginx
         # also hosts clipboard client

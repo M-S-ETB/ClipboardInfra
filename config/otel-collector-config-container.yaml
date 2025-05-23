@@ -1,4 +1,3 @@
-
 receivers:
   otlp:
     protocols:
@@ -13,10 +12,10 @@ processors:
   batch:
 
 exporters:
-  #  otlphttp/metrics:
-  #    endpoint: http://clipboard-prometheus:9090/api/v1/otlp
-  #    tls:
-  #      insecure: true
+  otlphttp/metrics:
+    endpoint: http://clipboard-prometheus:9090/api/v1/otlp/v1/metrics
+    tls:
+      insecure: true
   otlp/traces:
     endpoint: clipboard-tempo:14317
     tls:
@@ -40,3 +39,7 @@ service:
       processors: [batch]
       #exporters: [otlphttp/logs]
       exporters: [otlphttp/logs,debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/metrics]

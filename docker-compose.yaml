@@ -65,7 +65,7 @@ services:
 #      - "9090:9090"
     volumes:
       - "./clipboard_server/prometheus_data:/prometheus"
-      - "./clipboard_server/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
     # user: "1002:65534"
 
   clipboard-otel-collector:
@@ -142,12 +142,12 @@ services:
 
 
   clipboard-api:
-    image: clipboard-api:0.2.0-build.125
+    image: clipboard-api:0.4.10-build.68
     container_name: clipboard-api
     command: npm run start:dev-ms-docker
     volumes:
       - "./clipboard_server/logs:/app/logs"
-      - "config.json:/app/config.json:ro"
+      - "./config.json:/app/config.json:ro"
 #    working_dir: /app
     environment:
       # These replace the config in the .env files
@@ -157,9 +157,11 @@ services:
       DB_PASSWORD: erp
       DB_USERNAME: test
       DB_NAME: bu
+      CB2_OTEL_LOG_ENDPOINT: "http://clipboard-otel-collector:4318/v1/logs"
+      CB2_OTEL_TRACE_ENDPOINT: "http://clipboard-otel-collector:4318/v1/traces"
+      CB2_OTEL_METRICS_ENDPOINT: "http://clipboard-otel-collector:4318/v1/metrics"
       OTEL_HOSTNAME: clipboard-loki
-      LOKI_CONNECTION: clipboard-loki:3100
-      OTEL_EXPORTER_OTLP_ENDPOINT: "http://clipboard-otel-collector:4317"
+      LOKI_CONNECTION: clipboard-loki:3501
     networks:
       - clipboard_default
     ports:
@@ -169,7 +171,7 @@ services:
       - clipboard-message-queue
 
   clipboard-client:
-    image: clipboard-client:0.1.0-build.308
+    image: clipboard-client:0.6.1224-build.58
     container_name: clipboard-client
     ports:
       - "3200:3200"

@@ -10,7 +10,7 @@
         # Listening Address
         http_addr = "0.0.0.0";
         # and Port
-        http_port = 3500;
+        http_port = config.clipboardConfig.grafana.port;
         serve_from_sub_path = true;
       };
     };
@@ -26,12 +26,12 @@
         {
           name = "Loki";
           type = "loki";
-          url = "http://${config.clipboardConfig.grafanaLokiConnection}";
+          url = "http://${config.clipboardConfig.grafana.lokiConnection}";
         }
         {
           name = "Tempo";
           type = "tempo";
-          url = "http://${config.clipboardConfig.grafanaTempoConnection}";
+          url = "http://${config.clipboardConfig.grafana.tempoConnection}";
         }
       ];
       dashboards.settings.providers = [{
@@ -100,6 +100,6 @@
   networking.firewall.allowedTCPPorts = [
     4317 # OpenTelemetry gRPC
     4318 # OpenTelemetry HTTP
-    3500 # Grafana
+    config.clipboardConfig.grafana.port # Grafana
   ];
 }

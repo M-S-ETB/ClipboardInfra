@@ -4,13 +4,17 @@
     "apiUrl": "http://clipboard.intern.etb:3100/",
     "grafanaUrl": "http://clipboard.intern.etb:3500/grafana/",
     "messageQueueUrl": "http://clipboard.intern.etb:15672/",
-    "redisInsightUrl": "http://clipboard.intern.etb:8001/"
+    "redisInsightUrl": "http://clipboard.intern.etb:8001/redis-insight",
+	"otelTraceEndpoint": "http://clipboard.intern.etb:4318/v1/traces",
+	"otelLoggingEndpoint": "http://clipboard.intern.etb:4318/v1/logs"
   },
   "https": {
     "clientUrl": "https://clipboard.intern.etb:3201/",
     "apiUrl": "https://clipboard.intern.etb:3201/api/",
     "grafanaUrl": "https://clipboard.intern.etb:3201/grafana/",
     "messageQueueUrl": "https://clipboard.intern.etb:3201/message-queue/",
-    "redisInsightUrl": "https://clipboard.intern.etb:3201/redis-insight/"
+    "redisInsightUrl": "https://clipboard.intern.etb:3201/redis-insight/",
+	"otelTraceEndpoint": "https://clipboard.intern.etb:4318/v1/traces",
+	"otelLoggingEndpoint": "https://clipboard.intern.etb:4318/v1/logs"
   }
 }
