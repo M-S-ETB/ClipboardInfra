@@ -142,7 +142,7 @@ services:
 
 
   clipboard-api:
-    image: clipboard-api:0.4.10-build.68
+    image: clipboard-api:0.4.10-build.120
     container_name: clipboard-api
     command: npm run start:dev-ms-docker
     volumes:
@@ -162,6 +162,7 @@ services:
       CB2_OTEL_METRICS_ENDPOINT: "http://clipboard-otel-collector:4318/v1/metrics"
       OTEL_HOSTNAME: clipboard-loki
       LOKI_CONNECTION: clipboard-loki:3501
+      ENV_CONSOLE_LOG: true
     networks:
       - clipboard_default
     ports:

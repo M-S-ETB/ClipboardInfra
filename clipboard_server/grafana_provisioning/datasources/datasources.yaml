@@ -1,0 +1,36 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://clipboard-prometheus:9090/
+    isDefault: true
+    uid: bdf1bfry5j2f4b
+    user:
+    password:
+    database:
+    basicAuth: false
+    readOnly: false
+    secureJsonData:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: false
+    version: 1
+    editable: false
+    jsonData:
+      httpMethod: "POST"
+      timeInterval: "5s"
+
+
+  - name: loki
+    type: loki
+    uid: feet6vcqp0ykga
+    access: proxy
+    url: http://clipboard-loki:3100
+    jsonData:
+      timeout: 60
+      maxLines: 1000
+    basicAuth: false
+    isDefault: false
+    readOnly: false
