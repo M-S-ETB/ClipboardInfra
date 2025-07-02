@@ -40,7 +40,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: grafana-admin # use something safe, not this
       GF_SECURITY_ADMIN_PASSWORD: password-admin # use something safe, not this (store in secrets)
-      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
       GF_INSTALL_PLUGINS: ""
 
   clipboard-loki:
@@ -162,7 +162,7 @@ services:
       CB2_OTEL_METRICS_ENDPOINT: "http://clipboard-otel-collector:4318/v1/metrics"
       OTEL_HOSTNAME: clipboard-loki
       LOKI_CONNECTION: clipboard-loki:3501
-      ENV_CONSOLE_LOG: true
+      ENV_CONSOLE_LOG: "true"
     networks:
       - clipboard_default
     ports:
