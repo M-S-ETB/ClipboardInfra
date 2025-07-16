@@ -11,42 +11,49 @@ global:
 # Alertmanager configuration
 alerting:
   alertmanagers:
-  - static_configs:
-    - targets:
-      # - 'alertmanager:9093'
+    - static_configs:
+        - targets:
+        # - 'alertmanager:9093'
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
+# - "first_rules.yml"
+# - "second_rules.yml"
 
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: [ 'localhost:9090' ]
+
   - job_name: 'docker'
     static_configs:
-      - targets: ['docker.for.mac.localhost:9323']
+      - targets: [ 'docker.for.mac.localhost:9323' ]
+
   - job_name: 'node-exporter'
     static_configs:
-      - targets: ['clipboard-node-exporter:9100']
+      - targets: [ 'clipboard-node-exporter:9100' ]
+
   - job_name: 'oracledb'
     static_configs:
-      - targets: ['clipboard-oracledb-exporter:9161']
+      - targets: [ 'clipboard-oracledb-exporter:9161' ]
+
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['clipboard-cadvisor:8080']
+      - targets: [ 'clipboard-cadvisor:8080' ]
+
   - job_name: 'rabbitmq-server'
     static_configs:
-      - targets: ['clipboard-message-queue:15692']
+      - targets: [ 'clipboard-message-queue:15692' ]
+
   - job_name: 'rabbitmq-server-detailed'
     scrape_interval: 5s
     metrics_path: "/metrics/detailed"
     params:
-      family: ["queue_coarse_metrics"]
+      family: [ "queue_coarse_metrics" ]
     static_configs:
-      - targets: ['clipboard-message-queue:15692']
+      - targets: [ 'clipboard-message-queue:15692' ]
+
   - job_name: 'rabbitmq-perf-test'
     static_configs:
       - targets:
@@ -63,6 +70,7 @@ scrape_configs:
           - 'stress-dist-tls:8080'
           # docker-compose-qq.yml
           - 'qq-moderate-load:8080'
+
   - job_name: 'rabbitmq-exporter'
     scrape_interval: 60s
     scrape_timeout: 59s
@@ -70,7 +78,12 @@ scrape_configs:
       - targets:
           # docker-compose-dist-tls.yml
           - 'rabbitmq-exporter:9090'
+
   - job_name: 'clipboard_api_health'
     scrape_interval: 5s
     static_configs:
-      - targets: ['host.docker.internal:3100']
+      - targets: [ 'clipboard-api:3100' ]
+
+  - job_name: 'loki'
+    static_configs:
+      - targets: [ 'clipboard-loki:3100' ]
