@@ -79,7 +79,7 @@ services:
     depends_on:
       - clipboard-tempo
     volumes:
-      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./config/otel-collector-config-container.yaml:/etc/otel-collector-config.yaml
     command: [ "--config=/etc/otel-collector-config.yaml" ]
 
   clipboard-tempo:
@@ -124,22 +124,22 @@ services:
       - /:/rootfs:ro
     user: "1002:1000"
 
-  # clipboard-cadvisor:
-    # expose:
-      # - 8080
-    # # https://hub.docker.com/r/google/cadvisor/tags
-    # image: google/cadvisor:v0.33.0
-    # container_name: clipboard-cadvisor
-    # networks:
-      # - clipboard_default
-    # volumes:
-      # - /:/rootfs:ro
-      # - /var/run:/var/run:rw
-      # - /sys:/sys:ro
-      # - /var/lib/docker/:/var/lib/docker:ro
-      # #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
-    # user: "1002:1000"
-
+  clipboard-cadvisor:
+    expose:
+      - 8080
+    # https://hub.docker.com/r/google/cadvisor/tags
+    image: google/cadvisor:v0.33.0
+    container_name: clipboard-cadvisor
+    networks:
+      - clipboard_default
+    volumes:
+      - /:/rootfs:ro
+      - /sys:/sys:ro
+      - /proc:/proc:ro
+      - /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+      - /run/user/$(id -u)/libpod/pause:/var/run/containers/pause:rw
+      - /run/user/$(id -u)/libpod:/var/lib/containers:ro
+    user: "1002:1000"
 
   clipboard-api:
     image: clipboard-api:0.4.10-build.120

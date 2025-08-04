@@ -129,7 +129,7 @@ function fully_restart_container() {
 
     # Run docker-compose file
     echo "Starting corresponding compose setup for container: $container"
-    podman-compose -f "$compose_file_path" up -d
+    podman-compose -f "$compose_file_path" up -d "$container"
 }
 
 function restart_container() {
@@ -145,6 +145,11 @@ function restart_container() {
 function start_all() {
     echo "Starting compose setup!"
     podman-compose up -d
+}
+
+function stop_all() {
+    echo "Stopping compose setup!"
+    podman-compose down
 }
 
 function change_container_version() {
@@ -186,7 +191,7 @@ function change_container_version() {
 function display_menu() {
     echo "Choose an option: "
 
-    local options=("Select API version" "Select Client version" "Restart API container" "Restart Client container" "Startup All" "Quit")
+    local options=("Select API version" "Select Client version" "Restart API container" "Restart Client container" "Startup All" "Stop All" "Quit")
 
     select opt in "${options[@]}"
     do
@@ -226,9 +231,14 @@ function display_menu() {
                 start_all
                 return 4
                 ;;
+            "Stop All")
+                refresh_screen
+                stop_all
+                return 5
+                ;;
             "Quit")
                 echo "Quitting.."
-                return 5
+                return 6
                 ;;
         esac
 
@@ -252,7 +262,7 @@ do
     refresh_screen  # Refresh screen after entering each option
     display_menu
     result=$?
-    if [ $result -eq 5 ]; then
+    if [ $result -eq 6 ]; then
         break
     fi
 done
