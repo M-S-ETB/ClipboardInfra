@@ -6,7 +6,7 @@ networks:
 
 services:
   clipboard-redis-cache:
-    image: redis-stack:latest
+    image: redis/redis-stack:7.4.0-v3
     container_name: clipboard-redis-cache
     networks:
       - clipboard_default
@@ -17,7 +17,7 @@ services:
 #      RI_PROXY_PATH: "redis-insight"
 
   clipboard-message-queue:
-    image: rabbitmq:management
+    image: rabbitmq:4.0.7-management
     container_name: clipboard-message-queue
     networks:
       - clipboard_default
@@ -26,7 +26,7 @@ services:
       - "15672:15672"  # RabbitMQ management UI
 
   clipboard-grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.1.1
     container_name: clipboard-grafana
     ports:
       - "3000:3000"
@@ -44,7 +44,7 @@ services:
       GF_INSTALL_PLUGINS: ""
 
   clipboard-loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.5
     container_name: clipboard-loki
     ports:
       - "3501:3100"
@@ -57,7 +57,7 @@ services:
 
   clipboard-prometheus:
     # https://hub.docker.com/r/prom/prometheus/tags
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.4.0
     container_name: clipboard-prometheus
     networks:
       - clipboard_default
@@ -69,7 +69,7 @@ services:
     # user: "1002:65534"
 
   clipboard-otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector:0.127.0
     container_name: clipboard-otel-collector
     ports:
       - "4317:4317" # gRPC
@@ -83,7 +83,7 @@ services:
     command: [ "--config=/etc/otel-collector-config.yaml" ]
 
   clipboard-tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:r202-bd38bfa
     container_name: clipboard-tempo
     command: [ "-config.file=/etc/tempo/tempo-config.yaml" ]
     ports:
@@ -95,7 +95,7 @@ services:
       - ./config/tempo-config.yaml:/etc/tempo/tempo-config.yaml
 
   clipboard-oracledb-exporter:
-    image: iamseth/oracledb_exporter
+    image: iamseth/oracledb_exporter:0.3.0rc1-alpine
     container_name: clipboard-oracledb-exporter
     networks:
       - clipboard_default
@@ -128,7 +128,7 @@ services:
     expose:
       - 8080
     # https://hub.docker.com/r/google/cadvisor/tags
-    image: google/cadvisor:v0.33.0
+    image: cadvisor:v0.52.0
     container_name: clipboard-cadvisor
     networks:
       - clipboard_default
@@ -142,7 +142,7 @@ services:
     user: "1002:1000"
 
   clipboard-api:
-    image: clipboard-api:0.4.10-build.120
+    image: clipboard-api:0.4.10-build.178
     container_name: clipboard-api
     command: npm run start:dev-ms-docker
     volumes:
@@ -179,7 +179,7 @@ services:
       start_period: 15s
 
   clipboard-client:
-    image: clipboard-client:0.6.1224-build.58
+    image: clipboard-client:0.6.1224-build.331
     container_name: clipboard-client
     ports:
       - "3200:3200"
@@ -189,7 +189,7 @@ services:
       - clipboard_default
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.29.1
     container_name: clipboard-nginx_reverse_proxy
     volumes:
 #      - ./config.json:/usr/share/nginx/html/config.json:ro
