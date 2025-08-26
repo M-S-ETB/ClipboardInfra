@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# for the record: why systemd and dbus didn't work:
+#  https://serverfault.com/questions/936985/cannot-use-systemctl-user-due-to-failed-to-get-d-bus-connection-permission
+# TLDR: su doesn't initialize the dbus, use ssh instead to switch users
+
 # pushd "/opt/clipboard/" || exit
 
 if [ "$(whoami)" != "podman" ]; then
