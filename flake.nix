@@ -12,7 +12,7 @@
     # clipboardClient.url = "path:./../../07_Software/ClipboardClient2";
 
     # Nix flake for API project
-    clipboardApi.url = "path:../../07_Software/Clipboard_API";
+    # clipboardApi.url = "path:../../07_Software/Clipboard_API";
   };
 
   outputs = { self, nixpkgs }@inputs: {
