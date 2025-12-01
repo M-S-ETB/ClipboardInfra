@@ -12,10 +12,14 @@ processors:
   batch:
 
 exporters:
-  otlphttp/metrics:
-    endpoint: http://clipboard-prometheus:9090/api/v1/otlp/v1/metrics
-    tls:
-      insecure: true
+  prometheusremotewrite:
+    endpoint: "http://clipboard-prometheus:9090/api/v1/write" # URL of Prometheus remote write endpoint
+    resource_to_telemetry_conversion:
+      enabled: true
+#  otlphttp/metrics:
+#    endpoint: http://clipboard-prometheus:9090/api/v1/otlp
+#    tls:
+#      insecure: true
   otlp/traces:
     endpoint: clipboard-tempo:14317
     tls:
@@ -42,4 +46,5 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlphttp/metrics]
+#      exporters: [otlphttp/metrics]
+      exporters: [prometheusremotewrite]

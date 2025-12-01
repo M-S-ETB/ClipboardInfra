@@ -59,6 +59,14 @@ services:
     # https://hub.docker.com/r/prom/prometheus/tags
     image: prom/prometheus:v3.4.0
     container_name: clipboard-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/usr/share/prometheus/console_libraries
+      - --web.console.templates=/usr/share/prometheus/consoles
+      - --web.enable-lifecycle
+      - --web.enable-otlp-receiver
+      - --web.enable-remote-write-receiver
     networks:
       - clipboard_default
 #    ports:
@@ -142,7 +150,7 @@ services:
     user: "1002:1000"
 
   clipboard-api:
-    image: clipboard-api:0.4.10-build.178
+    image: clipboard-api:0.4.10-build.219
     container_name: clipboard-api
     command: npm run start:dev-ms-docker
     volumes:
@@ -194,8 +202,8 @@ services:
     volumes:
 #      - ./config.json:/usr/share/nginx/html/config.json:ro
       - ./config/nginx_reverse_proxy.conf:/etc/nginx/nginx.conf
-      - /opt/clipboard/certs/clipboard.pem:/etc/nginx/ssl/server.crt:ro
-      - /opt/clipboard/certs/clipboard.key:/etc/nginx/ssl/server.key:ro
+      - ./certs/clipboard.pem:/etc/nginx/ssl/server.crt:ro
+      - ./certs/clipboard.key:/etc/nginx/ssl/server.key:ro
     ports:
       - "3201:3201" # HTTPS / SSL
       - "3500:3500" # HTTP unsecure
