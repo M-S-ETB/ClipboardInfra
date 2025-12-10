@@ -9,5 +9,8 @@ container_images/
 /clipboard_server/tempo_data/*
 /clipboard_server/prometheus_data_otel/*
 
+# don't EVER commit certs to the repo
+/certs
+
 # don't ignore .keep
 !**/.keep
