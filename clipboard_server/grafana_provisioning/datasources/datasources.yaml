@@ -22,7 +22,6 @@ datasources:
       httpMethod: "POST"
       timeInterval: "5s"
 
-
   - name: loki
     type: loki
     uid: feet6vcqp0ykga
@@ -31,6 +30,46 @@ datasources:
     jsonData:
       timeout: 60
       maxLines: 1000
+    basicAuth: false
+    isDefault: false
+    readOnly: false
+
+  - name: redis-datasource
+    type: redis-datasource
+    access: proxy
+    url: "redis://clipboard-redis-cache:6379"
+    user: ""
+    database: ""
+    jsonData: {
+      "client": "standalone"
+    }
+    basicAuth: false
+    isDefault: false
+    readOnly: false
+
+  - name: tempo
+    type: tempo
+    access: proxy
+    url: "http://clipboard-tempo:3250"
+    user: ""
+    database: ""
+    secureJsonData:
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      tlsSkipVerify: false
+    jsonData: {
+      "streamingEnabled": {
+        "search": false
+      },
+      "tlsSkipVerify": false,
+      "tracesToLogsV2": {
+        "customQuery": false,
+        "datasourceUid": "feet6vcqp0ykga"
+      },
+      "tracesToMetrics": {
+        "datasourceUid": "bdf1bfry5j2f4b"
+      }
+    }
     basicAuth: false
     isDefault: false
     readOnly: false

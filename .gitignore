@@ -1,1 +1,13 @@
 container_images/
+
+# docker container mount points
+/clipboard_server/oracle-volume/oradata/*
+/clipboard_server/grafana_logs/*
+/clipboard_server/grafana_storage/*
+/clipboard_server/prometheus_data/*
+/clipboard_server/loki_data/*
+/clipboard_server/tempo_data/*
+/clipboard_server/prometheus_data_otel/*
+
+# don't ignore .keep
+!**/.keep
